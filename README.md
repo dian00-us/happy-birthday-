@@ -26,7 +26,7 @@
       margin: 10px 0;
     }
 
-    /* Фотогалерея в виде слайд-шоу */
+    /* Фотогалерея */
     .slideshow-container {
       max-width: 80%;
       margin: 20px auto;
@@ -39,7 +39,6 @@
 
     .slide {
       display: none;
-      width: 100%;
     }
 
     .slide img {
@@ -68,27 +67,7 @@
       right: 10px;
     }
 
-    .dots {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .dot {
-      cursor: pointer;
-      height: 15px;
-      width: 15px;
-      margin: 0 5px;
-      background-color: #bbb;
-      border-radius: 50%;
-      display: inline-block;
-      transition: background-color 0.3s ease;
-    }
-
-    .active, .dot:hover {
-      background-color: #6b4226;
-    }
-
-    /* Мини-игра (пазл) */
+    /* Пазл */
     .puzzle-container {
       margin: 30px auto;
       max-width: 400px;
@@ -103,20 +82,63 @@
     .puzzle-piece {
       width: 100%;
       height: 100px;
-      background-color: #f4c17b;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.5rem;
-      color: #6b4226;
+      background-size: 300px 300px;
       cursor: pointer;
       border-radius: 5px;
       user-select: none;
     }
 
     .puzzle-piece.correct {
-      background-color: #ffd966;
       pointer-events: none;
+      box-shadow: 0 0 5px 2px #ffd966;
+    }
+
+    /* Конфетти */
+    .confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .confetti div {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: gold;
+      animation: fall 5s linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-100%);
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+      }
+    }
+
+    /* Всплывающие сердечки */
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      clip-path: polygon(50% 0%, 100% 35%, 75% 100%, 50% 75%, 25% 100%, 0% 35%);
+      animation: floatUp 4s ease-in-out infinite;
+    }
+
+    @keyframes floatUp {
+      0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translateY(-200px) scale(1.5);
+      }
     }
   </style>
 </head>
@@ -128,9 +150,9 @@
 
   <!-- Главная страница -->
   <h1>С Днём Рождения, дорогая тётя!</h1>
-  <p>Пусть этот день будет полон радости, тепла и счастья. Мы всегда рядом, даже если нас разделяют километры. Ты невероятная! Пусть жизнь будет такой же прекрасной, как ты!</p>
+  <p>Ты - невероятная! Пусть в твоей жизни будет больше счастья, радости и чудес! Мы всегда рядом!</p>
 
-  <!-- Слайд-шоу -->
+  <!-- Фотогалерея -->
   <div class="slideshow-container">
     <div class="slide">
       <img src="photo1.jpg" alt="Фото 1">
@@ -138,107 +160,72 @@
     <div class="slide">
       <img src="photo2.jpg" alt="Фото 2">
     </div>
-    <div class="slide">
-      <img src="photo3.jpg" alt="Фото 3">
-    </div>
-    <div class="slide">
-      <img src="photo4.jpg" alt="Фото 4">
-    </div>
-    <div class="slide">
-      <img src="photo5.jpg" alt="Фото 5">
-    </div>
-    <div class="slide">
-      <img src="photo6.jpg" alt="Фото 6">
-    </div>
-    <div class="slide">
-      <img src="photo7.jpg" alt="Фото 7">
-    </div>
-    <div class="slide">
-      <img src="photo8.jpg" alt="Фото 8">
-    </div>
-    <div class="slide">
-      <img src="photo9.jpg" alt="Фото 9">
-    </div>
-    <div class="slide">
-      <img src="photo10.jpg" alt="Фото 10">
-    </div>
-    <div class="slide">
-      <img src="photo11.jpg" alt="Фото 11">
-    </div>
-    <div class="slide">
-      <img src="photo12.jpg" alt="Фото 12">
-    </div>
-
+    <!-- Добавьте ещё 10 фото сюда -->
     <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
     <button class="next" onclick="changeSlide(1)">&#10095;</button>
   </div>
 
-  <div class="dots" id="dots"></div>
-
-  <!-- Мини-игра -->
+  <!-- Пазл -->
   <div class="puzzle-container">
     <h2>Собери пазл</h2>
-    <p>Нажми на блоки, чтобы собрать правильный порядок (1-9).</p>
+    <p>Нажми на блоки, чтобы собрать фотографию!</p>
     <div class="puzzle" id="puzzle"></div>
     <p id="puzzle-message"></p>
   </div>
 
+  <div class="confetti" id="confetti"></div>
   <script>
-    // Слайд-шоу
-    let slideIndex = 0;
-    showSlides();
-
-    function showSlides() {
-      const slides = document.querySelectorAll('.slide');
-      const dots = document.querySelector('#dots');
-      slides.forEach((slide, index) => slide.style.display = index === slideIndex ? 'block' : 'none');
-
-      dots.innerHTML = '';
-      slides.forEach((_, index) => {
-        const dot = document.createElement('span');
-        dot.className = `dot ${index === slideIndex ? 'active' : ''}`;
-        dot.onclick = () => setSlide(index);
-        dots.appendChild(dot);
-      });
+    // Конфетти
+    function showConfetti() {
+      const confetti = document.getElementById('confetti');
+      for (let i = 0; i < 100; i++) {
+        const piece = document.createElement('div');
+        piece.style.left = `${Math.random() * 100}vw`;
+        piece.style.top = `${Math.random() * -100}vh`;
+        piece.style.animationDuration = `${Math.random() * 5 + 2}s`;
+        confetti.appendChild(piece);
+      }
     }
+    showConfetti();
 
-    function changeSlide(n) {
-      slideIndex = (slideIndex + n + 12) % 12;
-      showSlides();
+    // Всплывающие сердечки
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.style.left = `${Math.random() * 100}%`;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 4000);
     }
+    setInterval(createHeart, 500);
 
-    function setSlide(n) {
-      slideIndex = n;
-      showSlides();
-    }
-
-    // Мини-игра (пазл)
+    // Пазл
     const puzzle = document.getElementById('puzzle');
-    const pieces = Array.from({ length: 9 }, (_, i) => i + 1);
+    const image = 'photo1.jpg'; // Укажите путь к фото
+    const pieces = Array.from({ length: 9 }, (_, i) => i);
     let shuffled = [...pieces].sort(() => Math.random() - 0.5);
 
     function renderPuzzle() {
       puzzle.innerHTML = '';
       shuffled.forEach((num, index) => {
         const piece = document.createElement('div');
-        piece.className = `puzzle-piece ${num === index + 1 ? 'correct' : ''}`;
-        piece.textContent = num;
-        piece.onclick = () => movePiece(index);
+        piece.className = `puzzle-piece ${num === index ? 'correct' : ''}`;
+        piece.style.backgroundImage = `url(${image})`;
+        piece.style.backgroundPosition = `${(num % 3) * -100}px ${(Math.floor(num / 3)) * -100}px`;
+        piece.onclick = () => swapPieces(index);
         puzzle.appendChild(piece);
       });
 
-      if (shuffled.every((num, index) => num === index + 1)) {
+      if (shuffled.every((num, index) => num === index)) {
         document.getElementById('puzzle-message').textContent = 'Поздравляю! Пазл собран!';
       }
     }
 
-    function movePiece(index) {
-      if (index > 0 && shuffled[index - 1] === 9) {
-        [shuffled[index], shuffled[index - 1]] = [shuffled[index - 1], shuffled[index]];
-      } else if (index < 8 && shuffled[index + 1] === 9) {
-        [shuffled[index], shuffled[index + 1]] = [shuffled[index + 1], shuffled[index]];
+    function swapPieces(index) {
+      const emptyIndex = shuffled.indexOf(8); // Последняя пустая часть
+      if ([index - 1, index + 1, index - 3, index + 3].includes(emptyIndex)) {
+        [shuffled[index], shuffled[emptyIndex]] = [shuffled[emptyIndex], shuffled[index]];
+        renderPuzzle();
       }
-      renderPuzzle();
     }
 
     renderPuzzle();
